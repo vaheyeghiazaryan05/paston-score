@@ -125,3 +125,47 @@ test('deriveGame: empty game', () => {
   assert.deepEqual(g.scores, [0, 0, 0]);
   assert.equal(g.dealer, 2);
 });
+
+// --- "Бросил сразу": the first mover throws in the cards at once ---
+const drop = (player) => ({ type: 'drop', player });
+
+test('drop: the player gets -10, others 0, no pass counters change', () => {
+  for (const p of [0, 1, 2]) {
+    const r = E.scoreHand(drop(p));
+    const want = [0, 0, 0];
+    want[p] = -10;
+    assert.deepEqual(r.deltas, want);
+    assert.deepEqual(r.passAdd, [0, 0, 0]);
+  }
+});
+
+test('drop: validateHand accepts seats 0-2 only', () => {
+  assert.equal(E.validateHand(drop(0)), null);
+  assert.equal(E.validateHand(drop(2)), null);
+  assert.equal(E.validateHand(drop(3)), 'declarer');
+  assert.equal(E.validateHand({ type: 'drop' }), 'declarer');
+  assert.equal(E.validateHand({ type: 'drop', player: '1' }), 'declarer');
+});
+
+test('drop: buildHand makes a drop hand from the sheet draft', () => {
+  assert.deepEqual(E.buildHand({ drop: true, dropPlayer: 1 }), drop(1));
+  assert.equal(E.buildHand({ drop: true, dropPlayer: null }), null);
+});
+
+test('drop: deriveGame rotates the dealer, keeps passes, can go negative, and does not finish the game', () => {
+  const pass = hand('S', ['pass', 'pass'], [0, 0, 0]); // passes: players 1 and 2 -> 1 each
+  const g = E.deriveGame({ dealerStart: 0, hands: [pass, drop(1), drop(1)] });
+  assert.deepEqual(g.rows.map((r) => r.dealer), [0, 1, 2]);
+  assert.deepEqual(g.rows[1].total, [0, -10, 0]);
+  assert.deepEqual(g.rows[1].passes, [0, 1, 1]);
+  assert.deepEqual(g.scores, [6, -20, 0]);
+  assert.equal(g.dealer, 0);
+  assert.equal(g.finishedAt, -1);
+});
+
+test('drop: a third pass after drops still triggers the penalty', () => {
+  const pass = hand('S', ['pass', 'pass'], [0, 0, 0]);
+  const g = E.deriveGame({ dealerStart: 0, hands: [pass, drop(2), pass, drop(0), pass] });
+  assert.deepEqual(g.rows[4].penalty, [0, -10, -10]);
+  assert.deepEqual(g.scores, [6 * 3 - 10, -10, -10 - 10]);
+});

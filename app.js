@@ -51,9 +51,15 @@
     if (!game.hands.length) return `<p class="note">${t('noHands')}</p>`;
     return '<ul class="hist">' + game.hands.map((h, idx) => {
       const r = d.rows[idx];
-      const red = h.bid === 'D' || h.bid === 'H' ? 'red' : '';
-      const both = h.defense[0] === 'pass' && h.defense[1] === 'pass' ? ' · ' + t('bothPass') : '';
-      return `<li class="hrow"><div class="hh"><b>${t('hand')} ${idx + 1}</b> · ${esc(pname(game, h.declarer))} <span class="${red}">${SUIT[h.bid]}</span>${both}</div>
+      let head;
+      if (E.isDrop(h)) {
+        head = `${esc(pname(game, h.player))} · ${t('dropped')}`;
+      } else {
+        const red = h.bid === 'D' || h.bid === 'H' ? 'red' : '';
+        const both = h.defense[0] === 'pass' && h.defense[1] === 'pass' ? ' · ' + t('bothPass') : '';
+        head = `${esc(pname(game, h.declarer))} <span class="${red}">${SUIT[h.bid]}</span>${both}`;
+      }
+      return `<li class="hrow"><div class="hh"><b>${t('hand')} ${idx + 1}</b> · ${head}</div>
         <div class="hd">${[0, 1, 2].map((i) => `<span class="${r.total[i] < 0 ? 'neg' : r.total[i] > 0 ? 'pos' : ''}">${sg(r.total[i])}${r.penalty[i] ? '*' : ''}</span>`).join('')}</div></li>`;
     }).reverse().join('') + `</ul><p class="note">* ${t('penalty')}</p>`;
   }
@@ -116,7 +122,7 @@
     else if (act === 'resume') ui.screen = 'board';
     else if (act === 'open') { state.currentId = el.dataset.id; ui.screen = 'board'; }
     else if (act === 'home') ui.screen = 'start';
-    else if (act === 'add') ui.sheet = Sheet.blank();
+    else if (act === 'add') ui.sheet = Sheet.blank((E.deriveGame(game).dealer + 1) % 3);
     else if (act === 'undo') { if (game && window.confirm(t('undoConfirm'))) S.undoHand(game, E); }
     else if (act === 'continue') { if (game) game.continued = true; }
     persist();

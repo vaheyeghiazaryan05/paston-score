@@ -8,8 +8,9 @@
   const clamp = (n) => Math.max(0, Math.min(E.RULES.TRICKS, n));
   const sg = (n) => (n > 0 ? '+' + n : String(n));
 
-  function blank() {
-    return { declarer: null, bid: null, defense: [null, null], td: 0, t1: 0 };
+  // firstMover: the player to the left of the dealer, the default "who threw in"
+  function blank(firstMover) {
+    return { declarer: null, bid: null, defense: [null, null], td: 0, t1: 0, drop: false, dropPlayer: firstMover };
   }
 
   function chip(act, attrs, label, on, extra) {
@@ -29,12 +30,18 @@
     const errText = { tricks_sum: 'errTricksSum', tricks_range: 'errTricksRange', passer_tricks: 'errPasserTricks' }[err];
 
     let out = `<div class="overlay"><div class="sheet" role="dialog">`;
-    out += `<h2>${t('declarer')}</h2><div class="row">${[0, 1, 2].map((i) =>
-      chip('sh-decl', `data-v="${i}"`, esc(pname(game, i)), draft.declarer === i)).join('')}</div>`;
-    out += `<h2>${t('bid')}</h2><div class="row">${E.BIDS.map((b) =>
-      chip('sh-bid', `data-v="${b}"`, SUIT[b], draft.bid === b, isRed(b) ? 'red' : '')).join('')}</div>`;
+    out += `<div class="row" style="margin-top:12px">${chip('sh-drop', '', t('dropHand'), draft.drop)}</div>`;
+    if (draft.drop) {
+      out += `<h2>${t('dropWho')}</h2><div class="row">${[0, 1, 2].map((i) =>
+        chip('sh-dropper', `data-v="${i}"`, esc(pname(game, i)), draft.dropPlayer === i)).join('')}</div>`;
+    } else {
+      out += `<h2>${t('declarer')}</h2><div class="row">${[0, 1, 2].map((i) =>
+        chip('sh-decl', `data-v="${i}"`, esc(pname(game, i)), draft.declarer === i)).join('')}</div>`;
+      out += `<h2>${t('bid')}</h2><div class="row">${E.BIDS.map((b) =>
+        chip('sh-bid', `data-v="${b}"`, SUIT[b], draft.bid === b, isRed(b) ? 'red' : '')).join('')}</div>`;
+    }
 
-    if (draft.declarer !== null) {
+    if (!draft.drop && draft.declarer !== null) {
       const ds = E.defendersOf(draft.declarer);
       out += `<h2>${t('defense')}</h2>`;
       ds.forEach((p, k) => {
@@ -65,7 +72,7 @@
       out += `<div class="pv note"><div></div><div>—</div><div></div></div>`;
     }
     out += `<div class="err">${errText ? t(errText) : ''}</div>`;
-    out += `<div class="note">${t('redealHint')}</div>`;
+    if (!draft.drop) out += `<div class="note">${t('redealHint')}</div>`;
     out += `<div class="actions"><button class="secondary" data-act="sh-cancel">${t('cancel')}</button>
       <button class="primary" data-act="sh-save" ${err ? 'disabled' : ''}>${t('save')}</button></div>`;
     return out + '</div></div>';
@@ -74,7 +81,11 @@
   function click(el, draft) {
     const act = el.dataset.act;
     const v = el.dataset.v;
-    if (act === 'sh-decl') {
+    if (act === 'sh-drop') {
+      draft.drop = !draft.drop;
+    } else if (act === 'sh-dropper') {
+      draft.dropPlayer = Number(v);
+    } else if (act === 'sh-decl') {
       draft.declarer = Number(v);
       draft.defense = [null, null];
       draft.td = 0;

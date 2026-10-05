@@ -1,4 +1,4 @@
-const CACHE = 'paston-v1';
+const CACHE = 'paston-v2';
 const ASSETS = ['./', 'index.html', 'style.css', 'i18n.js', 'engine.js', 'store.js', 'sheet.js', 'app.js', 'manifest.webmanifest', 'icon.svg'];
 
 self.addEventListener('install', (e) => {

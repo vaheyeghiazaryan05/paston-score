@@ -88,3 +88,18 @@ test('undoHand: removes last hand and clears "continued" once the game is no lon
   assert.deepEqual(E.deriveGame(g).winners, []);
   assert.doesNotThrow(() => { S.undoHand(S.newGame(state, ['a', 'b', 'c'], 0, 2, 'g2'), E); });
 });
+
+test('drop hands: load keeps valid ones and drops invalid; addHand accepts', () => {
+  const raw = JSON.stringify({
+    players: ['A', 'B', 'C'], currentId: 'g1',
+    games: [{ id: 'g1', createdAt: 1, players: ['A', 'B', 'C'], dealerStart: 0,
+      hands: [{ type: 'drop', player: 1 }, { type: 'drop', player: 5 }, { type: 'drop' }] }],
+  });
+  const s = S.load(memory(raw), E);
+  assert.deepEqual(s.games[0].hands, [{ type: 'drop', player: 1 }]);
+  const st = S.emptyState();
+  const g = S.newGame(st, ['a', 'b', 'c'], 0, 1, 'g2');
+  assert.equal(S.addHand(g, { type: 'drop', player: 2 }, E), null);
+  assert.equal(S.addHand(g, { type: 'drop', player: 7 }, E), 'declarer');
+  assert.equal(g.hands.length, 1);
+});

@@ -11,6 +11,7 @@
     PASS_LIMIT: 3,
     PASS_PENALTY: -10,
     GRKHA_FAIL: -40,
+    DROP_PENALTY: -10,
     TARGET: 121,
     TRICKS: 10,
   };
@@ -23,7 +24,10 @@
     return SEATS.filter((i) => i !== declarer);
   }
 
+  const isDrop = (h) => !!h && h.type === 'drop';
+
   function validateHand(h) {
+    if (isDrop(h)) return SEATS.includes(h.player) ? null : 'declarer';
     if (!h || !SEATS.includes(h.declarer)) return 'declarer';
     if (!BIDS.includes(h.bid)) return 'bid';
     if (!Array.isArray(h.defense) || h.defense.length !== 2 ||
@@ -40,6 +44,11 @@
   }
 
   function scoreHand(h) {
+    if (isDrop(h)) {
+      const deltas = [0, 0, 0];
+      deltas[h.player] = RULES.DROP_PENALTY;
+      return { deltas, passAdd: [0, 0, 0] };
+    }
     const k = K[h.bid];
     const ds = defendersOf(h.declarer);
     const deltas = [0, 0, 0];
@@ -66,6 +75,7 @@
   }
 
   function buildHand(d) {
+    if (d.drop) return SEATS.includes(d.dropPlayer) ? { type: 'drop', player: d.dropPlayer } : null;
     if (!SEATS.includes(d.declarer) || !d.bid || !d.defense || !d.defense[0] || !d.defense[1]) return null;
     const [a, b] = d.defense;
     const base = { declarer: d.declarer, bid: d.bid, defense: [a, b] };
@@ -117,5 +127,5 @@
     return { scores, passes, rows, dealer: (g.dealerStart + g.hands.length) % 3, finishedAt, winners };
   }
 
-  return { RULES, K, BIDS, defendersOf, validateHand, scoreHand, buildHand, deriveGame };
+  return { RULES, K, BIDS, isDrop, defendersOf, validateHand, scoreHand, buildHand, deriveGame };
 });

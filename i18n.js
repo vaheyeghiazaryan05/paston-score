@@ -7,6 +7,7 @@
   const LANGS = ['ru', 'en', 'hy'];
   const DICT = {
     ru: {
+      dropHand: 'Бросил сразу', dropWho: 'Кто бросил', dropped: 'бросил(а)',
       title: 'Пастон', subtitle: 'Счёт игры', players: 'Игроки', player: 'Игрок',
       firstDealer: 'Первый сдающий', newGame: 'Новая партия', resume: 'Продолжить партию',
       recent: 'Последние партии', dealer: 'сдаёт', addHand: '+ Раздача', undo: 'Отменить последнюю',
@@ -20,6 +21,7 @@
       bothPass: 'оба пас', target: 'Цель: 121', passes: 'пасы', finished: 'окончена', home: 'К партиям',
     },
     en: {
+      dropHand: 'Threw in at once', dropWho: 'Who threw in', dropped: 'threw in',
       title: 'Paston', subtitle: 'Score keeper', players: 'Players', player: 'Player',
       firstDealer: 'First dealer', newGame: 'New game', resume: 'Resume game',
       recent: 'Recent games', dealer: 'deals', addHand: '+ Hand', undo: 'Undo last',
@@ -33,6 +35,7 @@
       bothPass: 'both pass', target: 'Target: 121', passes: 'passes', finished: 'finished', home: 'Games',
     },
     hy: {
+      dropHand: 'Անմիջապես հրաժարվեց', dropWho: 'Ով հրաժարվեց', dropped: 'հրաժարվեց',
       title: 'Պաստոն', subtitle: 'Խաղի հաշիվ', players: 'Խաղացողներ', player: 'Խաղացող',
       firstDealer: 'Առաջին բաժանողը', newGame: 'Նոր խաղ', resume: 'Շարունակել խաղը',
       recent: 'Վերջին խաղերը', dealer: 'բաժանում է', addHand: '+ Փուլ', undo: 'Չեղարկել վերջինը',
