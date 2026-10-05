@@ -1,0 +1,8 @@
+{
+  "name": "paston-score",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Пастон — счёт: мобильное PWA для ведения счёта игры",
+  "scripts": { "start": "node dev-server.js", "test": "node --test" },
+  "engines": { "node": ">=18" }
+}
