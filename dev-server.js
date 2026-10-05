@@ -7,7 +7,8 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
 const PORT = Number(process.env.PORT) || 8080;
 
 http.createServer((req, res) => {
-  const url = decodeURIComponent(req.url.split('?')[0]);
+  let url;
+  try { url = decodeURIComponent(req.url.split('?')[0]); } catch (e) { res.writeHead(400).end(); return; }
   const rel = url === '/' ? 'index.html' : url.replace(/^\/+/, '');
   const file = path.join(__dirname, rel);
   if (!file.startsWith(__dirname) || rel.includes('..')) { res.writeHead(403).end(); return; }

@@ -127,10 +127,9 @@
     const i = ev.target.dataset && ev.target.dataset.name;
     if (i === undefined) return;
     state.players[Number(i)] = ev.target.value.slice(0, 20);
+    const chip = root.querySelector(`[data-act="dealer"][data-v="${Number(i)}"]`);
+    if (chip) chip.textContent = label(state.players[Number(i)], Number(i));
     persist();
-  });
-  root.addEventListener('change', (ev) => {
-    if (ev.target.dataset && ev.target.dataset.name !== undefined) render();
   });
 
   try {
