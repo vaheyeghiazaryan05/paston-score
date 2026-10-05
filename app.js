@@ -134,7 +134,7 @@
   });
 
   try {
-    if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js');
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
   } catch (e) { /* offline cache is optional */ }
 
   render();

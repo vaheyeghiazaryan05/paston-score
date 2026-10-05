@@ -50,5 +50,5 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: v
 .pv { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; background: var(--card); border-radius: 12px; padding: 10px; }
 .pv div b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; }
 .err { color: var(--neg); min-height: 22px; margin: 8px 0; }
-.sheet .actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 8px; }
+.sheet .actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 8px; position: sticky; bottom: 0; padding: 8px 0; background: var(--bg); }
 .sheet .actions button { margin: 0; }
